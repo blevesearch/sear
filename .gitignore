@@ -1,0 +1,13 @@
+#*
+*.sublime-*
+*~
+.#*
+.project
+.settings
+**/.idea/
+**/*.iml
+.DS_Store
+vendor/**
+!vendor/manifest
+*.test
+tags
