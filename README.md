@@ -5,7 +5,7 @@
 [![Lint](https://github.com/blevesearch/sear/workflows/Lint/badge.svg?branch=master&event=push)](https://github.com/blevesearch/sear/actions?query=workflow%3ALint+event%3Apush+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/blevesearch/sear/badge.svg)](https://coveralls.io/github/blevesearch/sear)
 
-Sear is a Bleve index implementation designed for efficiently executing searches against a single document .
+Sear is a Bleve index implementation designed for efficiently executing searches against a single document (or a sequence of documents one at a time).
 
 Why is this useful?  Sometimes, a use case arises where it is useful to be able to answer the question, "would this document have matched this search?"
 And frequently we may want to ask this same question for several documents.  This index implementation is designed to supported this use case.
