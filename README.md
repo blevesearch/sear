@@ -1,5 +1,9 @@
 # sear
 
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/blevesearch/sear)](https://pkg.go.dev/github.com/blevesearch/sear)
+[![Tests](https://github.com/blevesearch/sear/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/blevesearch/sear/actions?query=workflow%3ATests+event%3Apush+branch%3Amaster)
+[![Lint](https://github.com/blevesearch/sear/workflows/Lint/badge.svg?branch=master&event=push)](https://github.com/blevesearch/sear/actions?query=workflow%3ALint+event%3Apush+branch%3Amaster)
+
 Sear is a Bleve index implementation designed for efficiently executing searches against a single document .
 
 Why is this useful?  Sometimes, a use case arises where it is useful to be able to answer the question, "would this document have matched this search?"
