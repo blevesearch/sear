@@ -50,7 +50,18 @@ func (d *Document) fieldIndex(name string) (int, error) {
 func (d *Document) newField(field index.Field) {
 	d.fieldIndexes[field.Name()] = len(d.fieldTokenFreqs)
 	d.fieldNames = append(d.fieldNames, field.Name())
-	d.fieldTokenFreqs = append(d.fieldTokenFreqs, field.AnalyzedTokenFrequencies())
+	af := field.AnalyzedTokenFrequencies()
+
+	// bleve analysis will leave field empty for non-composite fields, fix that here
+	for _, tf := range af {
+		for _, loc := range tf.Locations {
+			if loc.Field == "" {
+				loc.Field = field.Name()
+			}
+		}
+	}
+
+	d.fieldTokenFreqs = append(d.fieldTokenFreqs, af)
 	d.fieldLens = append(d.fieldLens, field.AnalyzedLength())
 }
 
