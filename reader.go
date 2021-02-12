@@ -20,10 +20,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/couchbase/vellum"
+	"github.com/blevesearch/vellum"
 
 	index "github.com/blevesearch/bleve_index_api"
-	velreg "github.com/couchbase/vellum/regexp"
+	velreg "github.com/blevesearch/vellum/regexp"
 )
 
 var internalDocID = []byte{0}
