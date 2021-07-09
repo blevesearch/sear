@@ -513,6 +513,11 @@ func mapAndUpdateDocument(t fatalfable, idx index.Index, id string, doc map[stri
 		if vstr, ok := v.(string); ok {
 			bleveDoc.AddField(newTestField(k, []byte(vstr)))
 		}
+		if vstrArr, ok := v.([]string); ok {
+			for _, vstr := range vstrArr {
+				bleveDoc.AddField(newTestField(k, []byte(vstr)))
+			}
+		}
 	}
 
 	err := idx.Update(bleveDoc)
@@ -630,6 +635,34 @@ func TestLarger(t *testing.T) {
 		t.Fatalf("error getting field dictionary range: %v", err)
 	}
 	assertTermDictionary(t, fd, []string{"a", "an", "as", "at", "can", "case", "far", "gas", "gases", "had", "has", "is", "its", "mass", "may", "ways"})
+}
+
+func TestMB47265(t *testing.T) {
+	idx, err := New("", nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mapAndUpdateDocument(t, idx, "bleve", map[string]interface{}{
+		"title": "Bleve",
+		"body":  []string{"one", "two", "three"},
+	})
+
+	reader, err := idx.Reader()
+	if err != nil {
+		t.Fatalf("error getting index reader: %v", err)
+	}
+
+	for _, term := range []string{"one", "two", "three"} {
+		tfr, err := reader.TermFieldReader([]byte(term), "body", false, false, false)
+		if err != nil {
+			t.Fatalf("error setting up term field reader: %v, ", err)
+		}
+
+		if tfr.Count() != 1 {
+			t.Errorf("error unexpected count for term field reader on term: %v", term)
+		}
+	}
 }
 
 func createBenchmarkIndexReader(b *testing.B) index.IndexReader {
