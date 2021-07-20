@@ -16,7 +16,6 @@ package sear
 
 import (
 	"bytes"
-	"io"
 	"testing"
 
 	index "github.com/blevesearch/bleve_index_api"
@@ -26,13 +25,13 @@ func TestDocIDReader(t *testing.T) {
 	// first test empty
 	var docIDReader *DocIDReader = docIDReaderEmpty
 	_, err := docIDReader.Next()
-	if err != io.EOF {
-		t.Fatalf("expected eof")
+	if err != nil {
+		t.Fatalf("expected nil")
 	}
 
 	_, err = docIDReader.Advance(internalDocID)
-	if err != io.EOF {
-		t.Fatalf("expected eof")
+	if err != nil {
+		t.Fatalf("expected nil")
 	}
 
 	// now test non-empty with no advance
@@ -46,9 +45,9 @@ func TestDocIDReader(t *testing.T) {
 		t.Fatalf("expected %v, got %v", internalDocID, internal)
 	}
 
-	_, err = docIDReader.Next()
-	if err != io.EOF {
-		t.Errorf("expected eof")
+	internal, err = docIDReader.Next()
+	if err != nil || internal != nil {
+		t.Errorf("expected nils")
 	}
 
 	// test empty again with advance
@@ -61,16 +60,16 @@ func TestDocIDReader(t *testing.T) {
 		t.Fatalf("expected %v, got %v", internalDocID, internal)
 	}
 
-	_, err = docIDReader.Next()
-	if err != io.EOF {
-		t.Errorf("expected eof")
+	internal, err = docIDReader.Next()
+	if err != nil || internal != nil {
+		t.Errorf("unexpected err: %v, internal: %v", err, internal)
 	}
 
 	// test empty again with advance to other internal id
 	docIDReader = NewDocIDReader()
-	_, err = docIDReader.Advance([]byte{0x1})
-	if err != io.EOF {
-		t.Errorf("expected eof")
+	internal, err = docIDReader.Advance([]byte{0x1})
+	if err != nil || internal != nil {
+		t.Errorf("unexpected err: %v, internal: %v", err, internal)
 	}
 
 	err = docIDReader.Close()
