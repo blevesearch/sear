@@ -16,7 +16,6 @@ package sear
 
 import (
 	"bytes"
-	"io"
 	"reflect"
 	"strings"
 	"testing"
@@ -385,9 +384,6 @@ func assertDocIDReader(t *testing.T, reader index.DocIDReader, expected [][]byte
 	for err == nil && internalID != nil {
 		internalIdsSeen = append(internalIdsSeen, internalID)
 		internalID, err = reader.Next()
-	}
-	if err != io.EOF {
-		t.Fatalf("unexpected error getting all doc ids")
 	}
 	if !reflect.DeepEqual(expected, internalIdsSeen) {
 		t.Fatalf("expected: %v, got %v", expected, internalIdsSeen)

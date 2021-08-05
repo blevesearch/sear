@@ -16,7 +16,6 @@ package sear
 
 import (
 	"bytes"
-	"io"
 
 	index "github.com/blevesearch/bleve_index_api"
 )
@@ -39,7 +38,7 @@ func NewDocIDReader() *DocIDReader {
 
 func (d *DocIDReader) Next() (index.IndexInternalID, error) {
 	if d.done {
-		return nil, io.EOF
+		return nil, nil
 	}
 	d.done = true
 	return internalDocID, nil
@@ -47,12 +46,12 @@ func (d *DocIDReader) Next() (index.IndexInternalID, error) {
 
 func (d *DocIDReader) Advance(id index.IndexInternalID) (index.IndexInternalID, error) {
 	if d.done {
-		return nil, io.EOF
+		return nil, nil
 	}
 	if bytes.Compare(id, internalDocID) > 0 {
 		// seek is after our internal id
 		d.done = true
-		return nil, io.EOF
+		return nil, nil
 	}
 	return d.Next()
 }
