@@ -139,7 +139,7 @@ func (r *Reader) FieldDictPrefix(field string, termPrefix []byte) (index.FieldDi
 
 func automatonMatch(la vellum.Automaton, termStr string) bool {
 	state := la.Start()
-	for i := range termStr {
+	for i := range []byte(termStr) {
 		state = la.Accept(state, termStr[i])
 		if !la.CanMatch(state) {
 			return false

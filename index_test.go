@@ -661,6 +661,30 @@ func TestMB47265(t *testing.T) {
 	}
 }
 
+func TestMB47473(t *testing.T) {
+	idx, err := New("", nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mapAndUpdateDocument(t, idx, "bleve", map[string]interface{}{
+		"title": "Bleve",
+		"body":  []string{"ko", "kó"},
+	})
+
+	reader, err := idx.Reader()
+	if err != nil {
+		t.Fatalf("error getting index reader: %v", err)
+	}
+
+	readerRegexp := reader.(index.IndexReaderRegexp)
+	fd, err := readerRegexp.FieldDictRegexp("body", "k.*")
+	if err != nil {
+		t.Fatalf("error getting field dictionary range: %v", err)
+	}
+	assertTermDictionary(t, fd, []string{"ko", "kó"})
+}
+
 func createBenchmarkIndexReader(b *testing.B) index.IndexReader {
 	idx, err := New("", nil, nil)
 	if err != nil {
