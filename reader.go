@@ -204,7 +204,10 @@ func (r *Reader) FieldDictContains(field string) (index.FieldDictContains, error
 }
 
 func (r *Reader) Document(id string) (index.Document, error) {
-	return nil, fmt.Errorf("document method is not supported")
+	if r.s.doc.doc.ID() == id {
+		return r.s.doc.doc, nil
+	}
+	return nil, fmt.Errorf("document not found")
 }
 
 func (r *Reader) DocValueReader(fields []string) (index.DocValueReader, error) {
