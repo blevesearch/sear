@@ -114,6 +114,10 @@ func (t *testDoc) AddField(f index.Field) {
 	t.fields = append(t.fields, f)
 }
 
+func (t *testDoc) StoredFieldsBytes() uint64 {
+	return 0
+}
+
 func (t *testDoc) ID() string {
 	return t.id
 }

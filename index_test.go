@@ -73,13 +73,13 @@ func TestIndexCrud(t *testing.T) {
 	assertTermDictionary(t, fd, []string{"code", "match"})
 
 	// tfr for field that doesn't exist
-	tfr, err := reader.TermFieldReader([]byte("marty"), "invalidfield", true, true, true)
+	tfr, err := reader.TermFieldReader(nil, []byte("marty"), "invalidfield", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
 	assertTermFieldReaderEmpty(t, tfr)
 
-	tfr, err = reader.TermFieldReader([]byte("marty"), "name", true, true, true)
+	tfr, err = reader.TermFieldReader(nil, []byte("marty"), "name", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
@@ -125,14 +125,14 @@ func TestIndexCrud(t *testing.T) {
 	})
 
 	// make sure previous name fails
-	tfr, err = reader.TermFieldReader([]byte("marty"), "name", true, true, true)
+	tfr, err = reader.TermFieldReader(nil, []byte("marty"), "name", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
 	assertTermFieldReaderEmpty(t, tfr)
 
 	// now look for what we expect to find
-	tfr, err = reader.TermFieldReader([]byte("tiger"), "name", true, true, true)
+	tfr, err = reader.TermFieldReader(nil, []byte("tiger"), "name", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
@@ -419,7 +419,7 @@ func assertEmptyIndex(t *testing.T, reader index.IndexReader) {
 		t.Errorf("expected doc count 0, got %d", count)
 	}
 
-	tfr, err := reader.TermFieldReader([]byte("b"), "field", true, true, true)
+	tfr, err := reader.TermFieldReader(nil, []byte("b"), "field", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
@@ -522,7 +522,7 @@ func mapAndUpdateDocument(t fatalfable, idx index.Index, id string, doc map[stri
 	}
 }
 
-const origBleveField = `There are three characteristics of liquids which are relevant to the discussion of a BLEVE: 
+const origBleveField = `There are three characteristics of liquids which are relevant to the discussion of a BLEVE:
 If a liquid in a sealed container is boiled, the pressure inside the container increases. As the liquid changes to a gas it expands - this expansion in a vented container would cause the gas and liquid to take up more space. In a sealed container the gas and liquid are not able to take up more space and so the pressure rises. Pressurized vessels containing liquids can reach an equilibrium where the liquid stops boiling and the pressure stops rising. This occurs when no more heat is being added to the system (either because it has reached ambient temperature or has had a heat source removed).
 The boiling temperature of a liquid is dependent on pressure - high pressures will yield high boiling temperatures, and low pressures will yield low boiling temperatures. A common simple experiment is to place a cup of water in a vacuum chamber, and then reduce the pressure in the chamber until the water boils. By reducing the pressure the water will boil even at room temperature. This works both ways - if the pressure is increased beyond normal atmospheric pressures, the boiling of hot water could be suppressed far beyond normal temperatures. The cooling system of a modern internal combustion engine is a real-world example.
 When a liquid boils it turns into a gas. The resulting gas takes up far more space than the liquid did.
@@ -650,7 +650,7 @@ func TestMB47265(t *testing.T) {
 	}
 
 	for _, term := range []string{"one", "two", "three"} {
-		tfr, err := reader.TermFieldReader([]byte(term), "body", false, false, false)
+		tfr, err := reader.TermFieldReader(nil, []byte(term), "body", false, false, false)
 		if err != nil {
 			t.Fatalf("error setting up term field reader: %v, ", err)
 		}

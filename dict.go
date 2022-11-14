@@ -40,6 +40,10 @@ func NewFieldDictEmpty() *FieldDict {
 	return &FieldDict{}
 }
 
+func (d *FieldDict) BytesRead() uint64 {
+	return 0
+}
+
 func NewFieldDictWithTerms(terms []string, include func(string) bool) *FieldDict {
 	return &FieldDict{
 		terms:       terms,
@@ -81,6 +85,10 @@ func NewFieldDictContainsFromTokenFrequencies(atf index.TokenFrequencies) *Field
 	return &FieldDictContains{
 		atf: atf,
 	}
+}
+
+func (d *FieldDictContains) BytesRead() uint64 {
+	return 0
 }
 
 func (d *FieldDictContains) Contains(key []byte) (bool, error) {

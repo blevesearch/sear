@@ -26,6 +26,10 @@ type DocValueReader struct {
 	fields []string
 }
 
+func (d *DocValueReader) BytesRead() uint64 {
+	return 0
+}
+
 func (d *DocValueReader) VisitDocValues(id index.IndexInternalID, visitor index.DocValueVisitor) error {
 	if d.r.s.doc == nil {
 		return nil
