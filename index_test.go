@@ -73,13 +73,13 @@ func TestIndexCrud(t *testing.T) {
 	assertTermDictionary(t, fd, []string{"code", "match"})
 
 	// tfr for field that doesn't exist
-	tfr, err := reader.TermFieldReader([]byte("marty"), "invalidfield", true, true, true)
+	tfr, err := reader.TermFieldReader(nil, []byte("marty"), "invalidfield", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
 	assertTermFieldReaderEmpty(t, tfr)
 
-	tfr, err = reader.TermFieldReader([]byte("marty"), "name", true, true, true)
+	tfr, err = reader.TermFieldReader(nil, []byte("marty"), "name", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
@@ -125,14 +125,14 @@ func TestIndexCrud(t *testing.T) {
 	})
 
 	// make sure previous name fails
-	tfr, err = reader.TermFieldReader([]byte("marty"), "name", true, true, true)
+	tfr, err = reader.TermFieldReader(nil, []byte("marty"), "name", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
 	assertTermFieldReaderEmpty(t, tfr)
 
 	// now look for what we expect to find
-	tfr, err = reader.TermFieldReader([]byte("tiger"), "name", true, true, true)
+	tfr, err = reader.TermFieldReader(nil, []byte("tiger"), "name", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
@@ -419,7 +419,7 @@ func assertEmptyIndex(t *testing.T, reader index.IndexReader) {
 		t.Errorf("expected doc count 0, got %d", count)
 	}
 
-	tfr, err := reader.TermFieldReader([]byte("b"), "field", true, true, true)
+	tfr, err := reader.TermFieldReader(nil, []byte("b"), "field", true, true, true)
 	if err != nil {
 		t.Fatalf("error getting term field reader: %v", err)
 	}
@@ -650,7 +650,7 @@ func TestMB47265(t *testing.T) {
 	}
 
 	for _, term := range []string{"one", "two", "three"} {
-		tfr, err := reader.TermFieldReader([]byte(term), "body", false, false, false)
+		tfr, err := reader.TermFieldReader(nil, []byte(term), "body", false, false, false)
 		if err != nil {
 			t.Fatalf("error setting up term field reader: %v, ", err)
 		}

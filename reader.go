@@ -16,6 +16,7 @@ package sear
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -50,7 +51,7 @@ func NewReader(m *Sear) *Reader {
 	return rv
 }
 
-func (r *Reader) TermFieldReader(term []byte, field string, includeFreq, includeNorm,
+func (r *Reader) TermFieldReader(ctx context.Context, term []byte, field string, includeFreq, includeNorm,
 	includeTermVectors bool) (index.TermFieldReader, error) {
 	if r.s.doc == nil {
 		return termFieldReaderEmpty, nil

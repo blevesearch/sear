@@ -44,3 +44,8 @@ func (d *DocValueReader) VisitDocValues(id index.IndexInternalID, visitor index.
 	}
 	return nil
 }
+
+func (d *DocValueReader) BytesRead() uint64 {
+	// not implemented
+	return 0
+}
