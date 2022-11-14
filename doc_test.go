@@ -144,6 +144,10 @@ func (t *testDoc) NumPlainTextBytes() uint64 {
 
 func (t *testDoc) AddIDField() {}
 
+func (t *testDoc) StoredFieldsBytes() uint64 {
+	return 0
+}
+
 type testField struct {
 	name               string
 	val                []byte

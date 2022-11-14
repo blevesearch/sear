@@ -63,6 +63,11 @@ func (d *FieldDict) Next() (*index.DictEntry, error) {
 	return nil, nil
 }
 
+func (d *FieldDict) BytesRead() uint64 {
+	// not implemented
+	return 0
+}
+
 func (d *FieldDict) Close() error {
 	return nil
 }
@@ -91,4 +96,9 @@ func (d *FieldDictContains) Contains(key []byte) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func (d *FieldDictContains) BytesRead() uint64 {
+	// not implemented
+	return 0
 }
