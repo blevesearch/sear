@@ -102,6 +102,7 @@ func (d *Document) Reset(doc index.Document) {
 	d.fieldNames = d.fieldNames[:0]
 	d.fieldTokenFreqs = d.fieldTokenFreqs[:0]
 	d.fieldLens = d.fieldLens[:0]
+	d.vectorDims = d.vectorDims[:0]
 
 	// clear cache
 	for k := range d.sortedTerms {
