@@ -32,7 +32,7 @@ func (d *Document) interpretVectorIfApplicable(field index.Field) int {
 	return 0
 }
 
-func (r *Reader) VectorIndexReader(ctx context.Context, vector []float32,
+func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 	field string, k int64) (index.VectorReader, error) {
 	if r.s.doc == nil {
 		return NewVectorFieldReaderEmpty(), nil
