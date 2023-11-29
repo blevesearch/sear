@@ -29,11 +29,10 @@ type Document struct {
 	fieldNames      []string
 	fieldTokenFreqs []index.TokenFrequencies
 	fieldLens       []int
+	vectorDims      []int // applicable to vector fields only
 
 	// deferred build and cache
 	sortedTerms map[string][]string
-
-	vectorDims []int
 }
 
 func NewDocument() *Document {
