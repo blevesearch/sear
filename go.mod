@@ -1,6 +1,6 @@
 module github.com/blevesearch/sear
 
-go 1.18
+go 1.20
 
 require (
 	github.com/blevesearch/bleve_index_api v1.1.3
