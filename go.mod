@@ -3,7 +3,7 @@ module github.com/blevesearch/sear
 go 1.20
 
 require (
-	github.com/blevesearch/bleve_index_api v1.1.3
+	github.com/blevesearch/bleve_index_api v1.1.4
 	github.com/blevesearch/vellum v1.0.9
 )
 
