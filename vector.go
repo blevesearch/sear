@@ -44,7 +44,7 @@ func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 		return NewVectorFieldReaderEmpty(), nil
 	}
 
-	if dims != len(vector) {
+	if k == 0 || dims != len(vector) {
 		// no match
 		return NewVectorFieldReaderEmpty(), nil
 	}
