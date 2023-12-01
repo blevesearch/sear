@@ -29,6 +29,7 @@ type Document struct {
 	fieldNames      []string
 	fieldTokenFreqs []index.TokenFrequencies
 	fieldLens       []int
+	vectorDims      []int // applicable to vector fields only
 
 	// deferred build and cache
 	sortedTerms map[string][]string
@@ -65,6 +66,7 @@ func (d *Document) newField(field index.Field) {
 		d.fieldNames = append(d.fieldNames, field.Name())
 		d.fieldTokenFreqs = append(d.fieldTokenFreqs, af)
 		d.fieldLens = append(d.fieldLens, field.AnalyzedLength())
+		d.vectorDims = append(d.vectorDims, d.interpretVectorIfApplicable(field))
 	} else {
 		d.fieldTokenFreqs[fieldIdx].MergeAll(field.Name(), af)
 		d.fieldLens[fieldIdx] += field.AnalyzedLength()
@@ -100,6 +102,7 @@ func (d *Document) Reset(doc index.Document) {
 	d.fieldNames = d.fieldNames[:0]
 	d.fieldTokenFreqs = d.fieldTokenFreqs[:0]
 	d.fieldLens = d.fieldLens[:0]
+	d.vectorDims = d.vectorDims[:0]
 
 	// clear cache
 	for k := range d.sortedTerms {
@@ -141,4 +144,13 @@ func (d *Document) TokenFreqsAndLen(fieldName string) (index.TokenFrequencies, i
 		return nil, 0, err
 	}
 	return d.fieldTokenFreqs[fieldIdx], d.fieldLens[fieldIdx], nil
+}
+
+func (d *Document) VectorDims(fieldName string) (dims int, err error) {
+	fieldIdx, err := d.fieldIndex(fieldName)
+	if err != nil {
+		return 0, err
+	}
+
+	return d.vectorDims[fieldIdx], nil
 }
