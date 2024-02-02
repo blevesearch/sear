@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/blevesearch/bleve_index_api v1.1.6
-	github.com/blevesearch/vellum v1.0.9
+	github.com/blevesearch/vellum v1.0.10
 )
 
 require (
