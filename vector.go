@@ -20,6 +20,7 @@ package sear
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 
 	index "github.com/blevesearch/bleve_index_api"
 )
@@ -33,7 +34,7 @@ func (d *Document) interpretVectorIfApplicable(field index.Field) int {
 }
 
 func (r *Reader) VectorReader(ctx context.Context, vector []float32,
-	field string, k int64) (index.VectorReader, error) {
+	field string, k int64, searchParams json.RawMessage) (index.VectorReader, error) {
 	if r.s.doc == nil {
 		return NewVectorFieldReaderEmpty(), nil
 	}
