@@ -50,8 +50,21 @@ func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 		return NewVectorFieldReaderEmpty(), nil
 	}
 
-	return NewVectorFieldReaderMatch(dims), nil
+	// searchParams not applicable for single document index
 
+	return NewVectorFieldReaderMatch(dims), nil
+}
+
+func (r *Reader) VectorReaderWithFilter(ctx context.Context, vector []float32,
+	field string, k int64, searchParams json.RawMessage,
+	filterIDs []index.IndexInternalID) (index.VectorReader, error) {
+	// if no filterIDs, current document does not qualify (in the
+	// single document index scenario)
+	if len(filterIDs) == 0 {
+		return NewVectorFieldReaderEmpty(), nil
+	}
+
+	return r.VectorReader(ctx, vector, field, k, searchParams)
 }
 
 // -----------------------------------------------------------------------------
