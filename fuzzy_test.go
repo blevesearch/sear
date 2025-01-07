@@ -70,13 +70,13 @@ func TestFuzzyMatch(t *testing.T) {
 		test := test
 		t.Run(fmt.Sprintf("%s-%d", test.searchTerm, test.fuzziness), func(t *testing.T) {
 			for _, sm := range test.shouldMatch {
-				dist, exceeded, _ := LevenshteinDistanceMaxReuseSlice(test.searchTerm, sm, test.fuzziness, nil)
+				dist, exceeded, _ := levenshteinDistanceMaxReuseSlice(test.searchTerm, sm, test.fuzziness, nil)
 				if dist > test.fuzziness || exceeded {
 					t.Errorf("expected %s to match, did not", sm)
 				}
 			}
 			for _, snm := range test.shouldNotMatch {
-				dist, exceeded, _ := LevenshteinDistanceMaxReuseSlice(test.searchTerm, snm, test.fuzziness, nil)
+				dist, exceeded, _ := levenshteinDistanceMaxReuseSlice(test.searchTerm, snm, test.fuzziness, nil)
 				if dist <= test.fuzziness && !exceeded {
 					t.Errorf("expected %s not to match, did", snm)
 				}
