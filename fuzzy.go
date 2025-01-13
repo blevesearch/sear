@@ -14,7 +14,7 @@
 
 package sear
 
-func LevenshteinDistanceMaxReuseSlice(a, b string, max int, d []int) (dist int, exceeded bool, reuse []int) {
+func levenshteinDistanceMaxReuseSlice(a, b string, max int, d []int) (dist int, exceeded bool, reuse []int) {
 	la := len(a)
 	lb := len(b)
 

@@ -63,6 +63,10 @@ func (d *FieldDict) Next() (*index.DictEntry, error) {
 	return nil, nil
 }
 
+func (d *FieldDict) Cardinality() int {
+	return len(d.terms)
+}
+
 func (d *FieldDict) BytesRead() uint64 {
 	// not implemented
 	return 0

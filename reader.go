@@ -21,9 +21,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/blevesearch/vellum"
-
 	index "github.com/blevesearch/bleve_index_api"
+	"github.com/blevesearch/vellum"
+	vellev "github.com/blevesearch/vellum/levenshtein"
 	velreg "github.com/blevesearch/vellum/regexp"
 )
 
@@ -150,29 +150,41 @@ func automatonMatch(la vellum.Automaton, termStr string) bool {
 }
 
 func (r *Reader) FieldDictRegexp(field, regexStr string) (index.FieldDict, error) {
+	fd, _, err := r.fieldDictRegexp(field, regexStr)
+	return fd, err
+}
+
+func (r *Reader) FieldDictRegexpAutomaton(field, regexStr string) (
+	index.FieldDict, index.RegexAutomaton, error) {
+	return r.fieldDictRegexp(field, regexStr)
+}
+
+func (r *Reader) fieldDictRegexp(field, regexStr string) (
+	index.FieldDict, index.RegexAutomaton, error) {
 	regex, cached := r.velregCache[regexStr]
 	if !cached {
 		var err error
 		regex, err = velreg.New(regexStr)
 		if err != nil {
-			return nil, fmt.Errorf("error compiling regexp: %v", err)
+			return nil, nil, fmt.Errorf("error compiling regexp: %v", err)
 		}
 		r.velregCache[regexStr] = regex
 	}
 	if r.s.doc == nil {
-		return fieldDictEmpty, nil
+		return fieldDictEmpty, regex, nil
 	}
 	fieldSortedTerms, err := r.s.doc.SortedTermsForField(field)
 	if err != nil {
 		// only error is field doesn't exist in doc
-		return fieldDictEmpty, nil
+		return fieldDictEmpty, regex, nil
 	}
 	return NewFieldDictWithTerms(fieldSortedTerms, func(s string) bool {
 		return automatonMatch(regex, s)
-	}), nil
+	}), regex, nil
 }
 
-func (r *Reader) FieldDictFuzzy(field, term string, fuzziness int, prefix string) (index.FieldDict, error) {
+func (r *Reader) FieldDictFuzzy(field, term string, fuzziness int, prefix string) (
+	index.FieldDict, error) {
 	if r.s.doc == nil {
 		return fieldDictEmpty, nil
 	}
@@ -184,12 +196,28 @@ func (r *Reader) FieldDictFuzzy(field, term string, fuzziness int, prefix string
 	return NewFieldDictWithTerms(fieldSortedTerms, func(indexTerm string) bool {
 		var dist int
 		var exceeded bool
-		dist, exceeded, r.levSlice = LevenshteinDistanceMaxReuseSlice(term, indexTerm, fuzziness, r.levSlice)
+		dist, exceeded, r.levSlice = levenshteinDistanceMaxReuseSlice(
+			term, indexTerm, fuzziness, r.levSlice)
 		if dist <= fuzziness && !exceeded {
 			return true
 		}
 		return false
 	}), nil
+}
+
+func (r *Reader) FieldDictFuzzyAutomaton(field, term string, fuzziness int, prefix string) (
+	index.FieldDict, index.FuzzyAutomaton, error) {
+	a, err := getLevAutomaton(term, uint8(fuzziness))
+	if err != nil {
+		return nil, nil, err
+	}
+	var fa index.FuzzyAutomaton
+	if vfa, ok := a.(vellum.FuzzyAutomaton); ok {
+		fa = vfa
+	}
+
+	fd, err := r.FieldDictFuzzy(field, term, fuzziness, prefix)
+	return fd, fa, err
 }
 
 func (r *Reader) FieldDictContains(field string) (index.FieldDictContains, error) {
@@ -252,4 +280,31 @@ func (r *Reader) InternalID(id string) (index.IndexInternalID, error) {
 
 func (r *Reader) Close() error {
 	return nil
+}
+
+// -----------------------------------------------------------------------------
+
+// re usable, threadsafe levenshtein builders
+var lb1, lb2 *vellev.LevenshteinAutomatonBuilder
+
+func init() {
+	var err error
+	lb1, err = vellev.NewLevenshteinAutomatonBuilder(1, true)
+	if err != nil {
+		panic(fmt.Errorf("Levenshtein automaton ed1 builder err: %v", err))
+	}
+	lb2, err = vellev.NewLevenshteinAutomatonBuilder(2, true)
+	if err != nil {
+		panic(fmt.Errorf("Levenshtein automaton ed2 builder err: %v", err))
+	}
+}
+
+// https://github.com/blevesearch/bleve/blob/77458c4/index/scorch/snapshot_index.go#L291
+func getLevAutomaton(term string, fuzziness uint8) (vellum.Automaton, error) {
+	if fuzziness == 1 {
+		return lb1.BuildDfa(term, fuzziness)
+	} else if fuzziness == 2 {
+		return lb2.BuildDfa(term, fuzziness)
+	}
+	return nil, fmt.Errorf("fuzziness exceeds the max limit")
 }
