@@ -148,6 +148,10 @@ func (t *testDoc) StoredFieldsBytes() uint64 {
 	return 0
 }
 
+func (t *testDoc) Indexed() bool {
+	return true
+}
+
 type testField struct {
 	name               string
 	val                []byte
