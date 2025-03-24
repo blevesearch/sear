@@ -34,7 +34,14 @@ func (d *Document) interpretVectorIfApplicable(field index.Field) int {
 }
 
 func (r *Reader) VectorReader(ctx context.Context, vector []float32,
-	field string, k int64, searchParams json.RawMessage) (index.VectorReader, error) {
+	field string, k int64, searchParams json.RawMessage,
+	selector index.EligibleDocumentSelector) (index.VectorReader, error) {
+	if selector != nil && len(selector.SegmentEligibleDocs(0)) == 0 {
+		// if selector/filter is applicable but no eligible docs,
+		// then current document does not qualify
+		return NewVectorFieldReaderEmpty(), nil
+	}
+
 	if r.s.doc == nil {
 		return NewVectorFieldReaderEmpty(), nil
 	}
@@ -53,18 +60,6 @@ func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 	// searchParams not applicable for single document index
 
 	return NewVectorFieldReaderMatch(dims), nil
-}
-
-func (r *Reader) VectorReaderWithFilter(ctx context.Context, vector []float32,
-	field string, k int64, searchParams json.RawMessage,
-	filterIDs []index.IndexInternalID) (index.VectorReader, error) {
-	// if no filterIDs, current document does not qualify (in the
-	// single document index scenario)
-	if len(filterIDs) == 0 {
-		return NewVectorFieldReaderEmpty(), nil
-	}
-
-	return r.VectorReader(ctx, vector, field, k, searchParams)
 }
 
 // -----------------------------------------------------------------------------
