@@ -46,6 +46,8 @@ func (eds *eligibleDocumentSelector) AddEligibleDocumentMatch(id index.IndexInte
 	if len(id) > 0 {
 		eds.docNums = append(eds.docNums, 0)
 	}
+
+	return nil
 }
 
 func (r *Reader) NewEligibleDocumentSelector() index.EligibleDocumentSelector {
