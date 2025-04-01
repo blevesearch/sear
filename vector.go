@@ -33,6 +33,25 @@ func (d *Document) interpretVectorIfApplicable(field index.Field) int {
 	return 0
 }
 
+type eligibleDocumentSelector struct {
+	docNums []uint64
+}
+
+func (eds *eligibleDocumentSelector) SegmentEligibleDocs(segmentID int) []uint64 {
+	// segmentID not applicable for single doc index
+	return eds.docNums
+}
+
+func (eds *eligibleDocumentSelector) AddEligibleDocumentMatch(id index.IndexInternalID) error {
+	if len(id) > 0 {
+		eds.docNums = append(eds.docNums, 0)
+	}
+}
+
+func (r *Reader) NewEligibleDocumentSelector() index.EligibleDocumentSelector {
+	return &eligibleDocumentSelector{}
+}
+
 func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 	field string, k int64, searchParams json.RawMessage,
 	selector index.EligibleDocumentSelector) (index.VectorReader, error) {
