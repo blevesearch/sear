@@ -1,7 +1,7 @@
 github.com/bits-and-blooms/bitset v1.2.0 h1:Kn4yilvwNtMACtf1eYDlG8H77R07mZSPbMjLyS07ChA=
 github.com/bits-and-blooms/bitset v1.2.0/go.mod h1:gIdJ4wp64HaoK2YrL1Q5/N7Y16edYb8uY+O0FJTyyDA=
-github.com/blevesearch/bleve_index_api v1.2.4 h1:XRk+wWtbNZSxKvW2bNg4fUpoc3XQDD63krBzB45fJDY=
-github.com/blevesearch/bleve_index_api v1.2.4/go.mod h1:rKQDl4u51uwafZxFrPD1R7xFOwKnzZW7s/LSeK4lgo0=
+github.com/blevesearch/bleve_index_api v1.2.7 h1:c8r9vmbaYQroAMSGag7zq5gEVPiuXrUQDqfnj7uYZSY=
+github.com/blevesearch/bleve_index_api v1.2.7/go.mod h1:rKQDl4u51uwafZxFrPD1R7xFOwKnzZW7s/LSeK4lgo0=
 github.com/blevesearch/mmap-go v1.0.4 h1:OVhDhT5B/M1HNPpYPBKIEJaD0F3Si+CrEKULGCDPWmc=
 github.com/blevesearch/mmap-go v1.0.4/go.mod h1:EWmEAOmdAS9z/pi/+Toxu99DnsbhG1TIxUoRmJw/pSs=
 github.com/blevesearch/vellum v1.1.0 h1:CinkGyIsgVlYf8Y2LUQHvdelgXr6PYuvoDIajq6yR9w=
