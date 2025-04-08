@@ -33,8 +33,36 @@ func (d *Document) interpretVectorIfApplicable(field index.Field) int {
 	return 0
 }
 
+type eligibleDocumentSelector struct {
+	docNums []uint64
+}
+
+func (eds *eligibleDocumentSelector) SegmentEligibleDocs(segmentID int) []uint64 {
+	// segmentID not applicable for single doc index
+	return eds.docNums
+}
+
+func (eds *eligibleDocumentSelector) AddEligibleDocumentMatch(id index.IndexInternalID) error {
+	if len(id) > 0 {
+		eds.docNums = append(eds.docNums, 0)
+	}
+
+	return nil
+}
+
+func (r *Reader) NewEligibleDocumentSelector() index.EligibleDocumentSelector {
+	return &eligibleDocumentSelector{}
+}
+
 func (r *Reader) VectorReader(ctx context.Context, vector []float32,
-	field string, k int64, searchParams json.RawMessage) (index.VectorReader, error) {
+	field string, k int64, searchParams json.RawMessage,
+	selector index.EligibleDocumentSelector) (index.VectorReader, error) {
+	if selector != nil && len(selector.SegmentEligibleDocs(0)) == 0 {
+		// if selector/filter is applicable but no eligible docs,
+		// then current document does not qualify
+		return NewVectorFieldReaderEmpty(), nil
+	}
+
 	if r.s.doc == nil {
 		return NewVectorFieldReaderEmpty(), nil
 	}
@@ -53,18 +81,6 @@ func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 	// searchParams not applicable for single document index
 
 	return NewVectorFieldReaderMatch(dims), nil
-}
-
-func (r *Reader) VectorReaderWithFilter(ctx context.Context, vector []float32,
-	field string, k int64, searchParams json.RawMessage,
-	filterIDs []index.IndexInternalID) (index.VectorReader, error) {
-	// if no filterIDs, current document does not qualify (in the
-	// single document index scenario)
-	if len(filterIDs) == 0 {
-		return NewVectorFieldReaderEmpty(), nil
-	}
-
-	return r.VectorReader(ctx, vector, field, k, searchParams)
 }
 
 // -----------------------------------------------------------------------------
