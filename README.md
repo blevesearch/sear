@@ -1,7 +1,7 @@
 # sear
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/blevesearch/sear)](https://pkg.go.dev/github.com/blevesearch/sear)
-[![Tests](https://github.com/blevesearch/sear/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/blevesearch/sear/actions?query=workflow%3ATests+event%3Apush+branch%3Amaster)
+[![Tests](https://github.com/blevesearch/sear/actions/workflows/tests.yml/badge.svg?branch=master&event=push)](https://github.com/blevesearch/sear/actions/workflows/tests.yml?query=event%3Apush+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/blevesearch/sear/badge.svg)](https://coveralls.io/github/blevesearch/sear)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
