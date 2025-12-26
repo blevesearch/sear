@@ -37,9 +37,11 @@ type eligibleDocumentSelector struct {
 	docNums []uint64
 }
 
-func (eds *eligibleDocumentSelector) SegmentEligibleDocs(segmentID int) []uint64 {
+func (eds *eligibleDocumentSelector) SegmentEligibleDocuments(segmentID int) index.EligibleDocumentList {
 	// segmentID not applicable for single doc index
-	return eds.docNums
+	return &eligibleDocumentList{
+		docNums: eds.docNums,
+	}
 }
 
 func (eds *eligibleDocumentSelector) AddEligibleDocumentMatch(id index.IndexInternalID) error {
@@ -50,6 +52,29 @@ func (eds *eligibleDocumentSelector) AddEligibleDocumentMatch(id index.IndexInte
 	return nil
 }
 
+type eligibleDocumentList struct {
+	docNums []uint64
+}
+
+func (edl *eligibleDocumentList) Count() int {
+	return len(edl.docNums)
+}
+
+func (edl *eligibleDocumentList) Iterator() index.EligibleDocumentIterator {
+	return eligibleDocumentIterator(edl.docNums)
+}
+
+type eligibleDocumentIterator []uint64
+
+func (edi eligibleDocumentIterator) Next() (uint64, bool) {
+	if len(edi) == 0 {
+		return 0, false
+	}
+	rv := edi[0]
+	edi = edi[1:]
+	return rv, true
+}
+
 func (r *Reader) NewEligibleDocumentSelector() index.EligibleDocumentSelector {
 	return &eligibleDocumentSelector{}
 }
@@ -57,7 +82,7 @@ func (r *Reader) NewEligibleDocumentSelector() index.EligibleDocumentSelector {
 func (r *Reader) VectorReader(ctx context.Context, vector []float32,
 	field string, k int64, searchParams json.RawMessage,
 	selector index.EligibleDocumentSelector) (index.VectorReader, error) {
-	if selector != nil && len(selector.SegmentEligibleDocs(0)) == 0 {
+	if selector != nil && selector.SegmentEligibleDocuments(0).Count() == 0 {
 		// if selector/filter is applicable but no eligible docs,
 		// then current document does not qualify
 		return NewVectorFieldReaderEmpty(), nil
