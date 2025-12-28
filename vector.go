@@ -61,17 +61,22 @@ func (edl *eligibleDocumentList) Count() int {
 }
 
 func (edl *eligibleDocumentList) Iterator() index.EligibleDocumentIterator {
-	return eligibleDocumentIterator(edl.docNums)
+	return &eligibleDocumentIterator{
+		docNums: edl.docNums,
+	}
 }
 
-type eligibleDocumentIterator []uint64
+type eligibleDocumentIterator struct {
+	docNums []uint64
+	idx     int
+}
 
-func (edi eligibleDocumentIterator) Next() (uint64, bool) {
-	if len(edi) == 0 {
+func (edi *eligibleDocumentIterator) Next() (uint64, bool) {
+	if edi.idx >= len(edi.docNums) {
 		return 0, false
 	}
-	rv := edi[0]
-	edi = edi[1:]
+	rv := edi.docNums[edi.idx]
+	edi.idx++
 	return rv, true
 }
 
