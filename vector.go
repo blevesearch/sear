@@ -56,8 +56,8 @@ type eligibleDocumentList struct {
 	docNums []uint64
 }
 
-func (edl *eligibleDocumentList) Count() int {
-	return len(edl.docNums)
+func (edl *eligibleDocumentList) Count() uint64 {
+	return uint64(len(edl.docNums))
 }
 
 func (edl *eligibleDocumentList) Iterator() index.EligibleDocumentIterator {
