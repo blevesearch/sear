@@ -85,6 +85,10 @@ func (s *Sear) Batch(batch *index.Batch) error {
 	return fmt.Errorf("batch indexing is not supported by this index")
 }
 
+func (s *Sear) GetInternal(key []byte) ([]byte, error) {
+	return s.internal[string(key)], nil
+}
+
 // SetInternal sets a value in the index internal storage.
 func (s *Sear) SetInternal(key, val []byte) error {
 	s.internal[string(key)] = val
