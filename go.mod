@@ -1,14 +1,14 @@
 module github.com/blevesearch/sear
 
-go 1.24
+go 1.25.0
 
 require (
-	github.com/blevesearch/bleve_index_api v1.3.1
-	github.com/blevesearch/vellum v1.1.0
+	github.com/blevesearch/bleve_index_api v1.4.0
+	github.com/blevesearch/vellum v1.2.0
 )
 
 require (
-	github.com/bits-and-blooms/bitset v1.2.0 // indirect
-	github.com/blevesearch/mmap-go v1.0.4 // indirect
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	github.com/bits-and-blooms/bitset v1.24.5 // indirect
+	github.com/blevesearch/mmap-go v1.2.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
 )
