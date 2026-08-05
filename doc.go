@@ -31,6 +31,10 @@ type Document struct {
 	fieldLens       []int
 	vectorDims      []int // applicable to vector fields only
 
+	// docvalues which are not part of the field's analyzed terms, currently
+	// only the encoded shape of a geoshape field
+	fieldExtraDocValues [][][]byte
+
 	// deferred build and cache
 	sortedTerms map[string][]string
 }
@@ -62,14 +66,24 @@ func (d *Document) newField(field index.Field) {
 
 	fieldIdx, exists := d.fieldIndexes[field.Name()]
 	if !exists {
-		d.fieldIndexes[field.Name()] = len(d.fieldTokenFreqs)
+		fieldIdx = len(d.fieldTokenFreqs)
+		d.fieldIndexes[field.Name()] = fieldIdx
 		d.fieldNames = append(d.fieldNames, field.Name())
 		d.fieldTokenFreqs = append(d.fieldTokenFreqs, af)
 		d.fieldLens = append(d.fieldLens, field.AnalyzedLength())
 		d.vectorDims = append(d.vectorDims, d.interpretVectorIfApplicable(field))
+		d.fieldExtraDocValues = append(d.fieldExtraDocValues, nil)
 	} else {
 		d.fieldTokenFreqs[fieldIdx].MergeAll(field.Name(), af)
 		d.fieldLens[fieldIdx] += field.AnalyzedLength()
+	}
+
+	// a geoshape field keeps the encoded shape out of its analyzed terms, it is
+	// only reachable through the field's docvalues, which is where bleve's
+	// geoshape relation filter looks for it.
+	if gsf, ok := field.(index.GeoShapeField); ok {
+		d.fieldExtraDocValues[fieldIdx] = append(d.fieldExtraDocValues[fieldIdx],
+			gsf.EncodedShape())
 	}
 }
 
@@ -86,6 +100,28 @@ func (d *Document) analyze() {
 				d.doc.VisitComposite(func(cf index.CompositeField) {
 					cf.Compose(field.Name(), field.AnalyzedLength(), field.AnalyzedTokenFrequencies())
 				})
+
+				// Since the encoded geoShape is only necessary within the doc values
+				// of the geoShapeField, it has been removed from the field's term dictionary.
+				// However, '_all' field uses its term dictionary as its docValues, so it
+				// becomes necessary to add the geoShape into the '_all' field's term dictionary
+				if f, ok := field.(index.GeoShapeField); ok {
+					d.doc.VisitComposite(func(cf index.CompositeField) {
+						geoshape := f.EncodedShape()
+						cf.Compose(field.Name(), 1, index.TokenFrequencies{
+							string(geoshape): &index.TokenFreq{
+								Term: geoshape,
+								Locations: []*index.TokenLocation{
+									{
+										Start:    0,
+										End:      len(geoshape),
+										Position: 1,
+									},
+								},
+							},
+						})
+					})
+				}
 			}
 		}
 	})
@@ -103,6 +139,7 @@ func (d *Document) Reset(doc index.Document) {
 	d.fieldTokenFreqs = d.fieldTokenFreqs[:0]
 	d.fieldLens = d.fieldLens[:0]
 	d.vectorDims = d.vectorDims[:0]
+	d.fieldExtraDocValues = d.fieldExtraDocValues[:0]
 
 	// clear cache
 	for k := range d.sortedTerms {
@@ -144,6 +181,14 @@ func (d *Document) TokenFreqsAndLen(fieldName string) (index.TokenFrequencies, i
 		return nil, 0, err
 	}
 	return d.fieldTokenFreqs[fieldIdx], d.fieldLens[fieldIdx], nil
+}
+
+func (d *Document) ExtraDocValues(fieldName string) [][]byte {
+	fieldIdx, err := d.fieldIndex(fieldName)
+	if err != nil {
+		return nil
+	}
+	return d.fieldExtraDocValues[fieldIdx]
 }
 
 func (d *Document) VectorDims(fieldName string) (dims int, err error) {
