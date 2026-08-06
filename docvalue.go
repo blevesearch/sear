@@ -41,6 +41,10 @@ func (d *DocValueReader) VisitDocValues(id index.IndexInternalID, visitor index.
 				visitor(dvrField, v.Term)
 			}
 		}
+
+		for _, dv := range d.r.s.doc.ExtraDocValues(dvrField) {
+			visitor(dvrField, dv)
+		}
 	}
 	return nil
 }
